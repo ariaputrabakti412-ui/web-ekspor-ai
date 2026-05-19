@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Ekspor AI & Edukasi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
@@ -23,11 +23,11 @@
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center space-x-2">
-                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full animate-pulse">● AI Connected</span>
+                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full animate-pulse">● Live Gemini AI</span>
                     <h2 class="text-xl font-bold text-gray-900">Rangkuman Berita Ekspor Hari Ini</h2>
                 </div>
-                <button onclick="muatBeritaEksporAI()" class="text-xs bg-blue-100 text-blue-600 hover:bg-blue-200 px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1">
-                    🔄 Ganti Berita (AI Re-Fetch)
+                <button onclick="panggilAIAsli()" class="text-xs bg-blue-100 text-blue-600 hover:bg-blue-200 px-3 py-1.5 rounded-lg font-medium transition">
+                    🔄 Minta Berita Baru (Live AI)
                 </button>
             </div>
             
@@ -36,7 +36,7 @@
                     <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
                     <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
                     <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
-                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-xl"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
+                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
                 </div>
             </div>
         </div>
@@ -44,7 +44,7 @@
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl">
             <h2 class="text-lg font-bold mb-4 text-gray-900">📹 Video Edukasi Terbaru</h2>
             <div class="aspect-video rounded-lg overflow-hidden bg-gray-200">
-                <iframe class="w-full h-full" src="https://www.youtube.com/embed/eL72V8S2_hI" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
+                <iframe class="w-full h-full" src="[https://www.youtube.com/embed/eL72V8S2_hI](https://www.youtube.com/embed/eL72V8S2_hI)" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
             </div>
             <h3 class="font-semibold mt-2 text-sm text-gray-800">Edukasi Ekspor Pemula: Cara Mudah Riset Pasar Internasional</h3>
         </div>
@@ -57,88 +57,52 @@
             return new Date().toLocaleDateString('id-ID', opsi);
         }
 
-        // Kumpulan Database Berita Global yang dianalisis oleh sistem AI secara acak (Dynamic Feed)
-        const databaseBeritaAI = [
-            {
-                kategori: "MARKET UPDATE",
-                gambar: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60",
-                judul: "Permintaan Kopi Gayo & Robusta Indonesia Melonjak di Pasar Eropa",
-                isi: "Kawasan Eropa mencatatkan kenaikan impor kopi sebesar 14% bulan ini. Sertifikasi organik menjadi kunci utama produk lokal menembus pasar Jerman."
-            },
-            {
-                kategori: "COMMODITY",
-                gambar: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&auto=format&fit=crop&q=60",
-                judul: "Ekspor Olahan Kelapa Sawit Catat Rekor Baru di Asia Selatan",
-                isi: "Alur distribusi ekspor ke India dan Pakistan mengalami lonjakan menyusul relaksasi tarif bea masuk. Produsen lokal diimbau maksimalkan pengiriman."
-            },
-            {
-                kategori: "UMKM GO GLOBAL",
-                gambar: "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&auto=format&fit=crop&q=60",
-                judul: "Kerajinan Bambu Jawa Barat Tembus Pasar Retail Premium Jepang",
-                isi: "Melalui fasilitasi perdagangan terpadu, anyaman bambu kreatif berhasil memenuhi standar kualitas ketat (JIS) untuk dipasarkan di Tokyo."
-            },
-            {
-                kategori: "LOGISTICS",
-                gambar: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60",
-                judul: "Strategi Baru Kemenlu Menembus Jalur Dagang Timur Tengah",
-                isi: "Pemerintah meresmikan jalur logistik ekspres baru guna memangkas durasi pengiriman komoditas ekspor unggulan hingga 7 hari kerja."
-            },
-            {
-                kategori: "AGRI-BUSINESS",
-                gambar: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=500&auto=format&fit=crop&q=60",
-                judul: "Rempah-Rempah Maluku Kuasai Pasar Kuliner di Amerika Serikat",
-                isi: "Cengkeh dan pala organik hasil tani Maluku Utara resmi menandatangani kontrak ekspor senilai USD 2 Juta dengan korporasi ritel pangan di California."
-            },
-            {
-                kategori: "FISHERY",
-                gambar: "https://images.unsplash.com/photo-1534604973900-c43ab4c2e0ab?w=500&auto=format&fit=crop&q=60",
-                judul: "Ekspor Tuna Sirip Biru Sulut Meningkat Tajam ke Korea Selatan",
-                isi: "Sektor perikanan Sulawesi Utara mencatatkan rekor tonase pengiriman tuna segar harian tertinggi melalui jalur penerbangan kargo langsung Cargo-Direct."
-            }
+        // Gambar default bawaan untuk mempercantik kartu berita
+        const daftarGambar = [
+            "[https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60](https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60)",
+            "[https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&auto=format&fit=crop&q=60](https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&auto=format&fit=crop&q=60)",
+            "[https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&auto=format&fit=crop&q=60](https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&auto=format&fit=crop&q=60)",
+            "[https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60](https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60)"
         ];
 
-        function muatBeritaEksporAI() {
+        async function panggilAIAsli() {
             const kontainerBerita = document.getElementById('berita-ai');
             const tanggalSekarang = dapatkanTanggalHariIni();
 
-            // Efek Loading Animasi saat AI memproses data baru
-            kontainerBerita.innerHTML = `
-                <div class="animate-pulse grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
-                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
-                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
-                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
-                </div>
-            `;
+            // Pasang animasi loading saat backend bekerja menembak Google Gemini
+            kontainerBerita.innerHTML = `<p class="text-sm text-gray-500 italic animate-bounce text-center py-10">Gemini AI sedang berpikir keras menyusun berita nyata...</p>`;
 
-            setTimeout(() => {
-                // Algoritma AI untuk mengacak berita (shuffling) sehingga isi berita berganti-ganti setiap kali web diakses / di-refresh
-                const beritaAcak = [...databaseBeritaAI].sort(() => 0.5 - Math.random()).slice(0, 4);
+            try {
+                // MEMANGGIL BACKEND SERVERLESS KITA
+                const response = await fetch('/api/get-news');
+                const dataBeritaDariGemini = await response.json();
 
                 kontainerBerita.innerHTML = `
-                    <p class="text-xs text-gray-400 mb-5 font-mono">Dibuat otomatis oleh AI pada: ${tanggalSekarang}</p>
+                    <p class="text-xs text-gray-400 mb-5 font-mono">Diproses LIVE oleh Gemini AI pada: ${tanggalSekarang}</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        ${beritaAcak.map(berita => `
+                        ${dataBeritaDariGemini.map((berita, indeks) => `
                             <div class="flex flex-col space-y-2 group cursor-pointer">
                                 <div class="w-full h-44 rounded-lg overflow-hidden bg-gray-100">
-                                    <img src="${berita.gambar}" alt="Ilustrasi Berita" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                    <img src="${daftarGambar[indeks] || daftarGambar[0]}" alt="Ilustrasi" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                                 </div>
                                 <span class="text-blue-600 font-bold tracking-wider uppercase text-xs pt-1">${berita.kategori}</span>
                                 <h3 class="font-bold text-gray-900 text-lg leading-tight line-clamp-2 group-hover:text-blue-600 transition">
                                     ${berita.judul}
                                 </h3>
                                 <span class="text-gray-400 text-xs">${tanggalSekarang}</span>
-                                <p class="text-gray-500 text-xs leading-relaxed line-clamp-2">
+                                <p class="text-gray-500 text-xs leading-relaxed line-clamp-3">
                                     ${berita.isi}
                                 </p>
                             </div>
                         `).join('')}
                     </div>
                 `;
-            }, 1000); // Durasi Loading Berita
+            } catch (error) {
+                kontainerBerita.innerHTML = `<p class="text-red-500 text-sm">Gagal memuat berita pintar: ${error.message}. Pastikan kamu sudah setting API Key di dashboard Vercel.</p>`;
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', muatBeritaEksporAI);
+        document.addEventListener('DOMContentLoaded', panggilAIAsli);
     </script>
 
 </body>
