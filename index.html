@@ -44,7 +44,7 @@
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl">
             <h2 class="text-lg font-bold mb-4 text-gray-900">📹 Video Edukasi Terbaru</h2>
             <div class="aspect-video rounded-lg overflow-hidden bg-gray-200">
-                <iframe class="w-full h-full" src="https://www.youtube.com/embed/eL72V8S2_hI" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
+                <iframe class="w-full h-full" src="https://www.youtube.com/embed/x_Oq4h_gC6E" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
             </div>
             <h3 class="font-semibold mt-2 text-sm text-gray-800">Edukasi Ekspor Pemula: Cara Mudah Riset Pasar Internasional</h3>
         </div>
@@ -57,7 +57,6 @@
             return new Date().toLocaleDateString('id-ID', opsi);
         }
 
-        // Daftar gambar default yang cocok dengan tema ekspor/bisnis internasional
         const daftarGambar = [
             "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60",
             "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&auto=format&fit=crop&q=60",
@@ -69,7 +68,6 @@
             const kontainerBerita = document.getElementById('berita-ai');
             const tanggalSekarang = dapatkanTanggalHariIni();
 
-            // Loading state yang rapi dengan Tailwind CSS
             kontainerBerita.innerHTML = `
                 <div class="col-span-full text-center py-10">
                     <p class="text-sm text-gray-500 italic animate-bounce">Membuka enkripsi data... Gemini AI sedang merangkum berita perdagangan hari ini...</p>
@@ -79,6 +77,18 @@
             try {
                 const response = await fetch('/api/get-news');
                 const dataBeritaDariGemini = await response.json();
+
+                // Deteksi jika backend mengirimkan object error hasil tangkapan detektif
+                if (dataBeritaDariGemini.error) {
+                    kontainerBerita.innerHTML = `
+                        <div class="col-span-full bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                            <p class="text-red-700 text-sm font-semibold">🚨 Penolakan Sistem Serverless</p>
+                            <p class="text-red-500 text-xs mt-1">Eror: ${dataBeritaDariGemini.error}</p>
+                            <p class="text-gray-600 text-xs mt-1">Detail: ${dataBeritaDariGemini.detail}</p>
+                        </div>
+                    `;
+                    return;
+                }
 
                 kontainerBerita.innerHTML = `
                     <p class="text-xs text-gray-400 mb-5 font-mono col-span-full">Diproses LIVE oleh Gemini AI pada: ${tanggalSekarang}</p>
@@ -104,7 +114,8 @@
                 kontainerBerita.innerHTML = `
                     <div class="col-span-full bg-red-50 border-l-4 border-red-500 p-4 rounded">
                         <p class="text-red-700 text-sm font-semibold">Gagal memuat sistem AI Pintar</p>
-                        <p class="text-red-500 text-xs mt-1">Alasan: Environment Variable belum aktif atau proses Redeploy di Vercel terlewat.</p>
+                        <p class="text-red-500 text-xs mt-1">Pesan Sistem: ${error.message}</p>
+                        <p class="text-gray-500 text-xs mt-1 font-mono">Buka tab 'Logs' di Vercel untuk info detail.</p>
                     </div>
                 `;
             }
@@ -112,6 +123,5 @@
 
         document.addEventListener('DOMContentLoaded', panggilAIAsli);
     </script>
-
 </body>
 </html>
