@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Ekspor AI & Edukasi</title>
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
@@ -44,7 +44,7 @@
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl">
             <h2 class="text-lg font-bold mb-4 text-gray-900">📹 Video Edukasi Terbaru</h2>
             <div class="aspect-video rounded-lg overflow-hidden bg-gray-200">
-                <iframe class="w-full h-full" src="[https://www.youtube.com/embed/eL72V8S2_hI](https://www.youtube.com/embed/eL72V8S2_hI)" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
+                <iframe class="w-full h-full" src="https://www.youtube.com/embed/eL72V8S2_hI" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
             </div>
             <h3 class="font-semibold mt-2 text-sm text-gray-800">Edukasi Ekspor Pemula: Cara Mudah Riset Pasar Internasional</h3>
         </div>
@@ -57,35 +57,38 @@
             return new Date().toLocaleDateString('id-ID', opsi);
         }
 
-        // Gambar default bawaan untuk mempercantik kartu berita
+        // Daftar gambar default yang cocok dengan tema ekspor/bisnis internasional
         const daftarGambar = [
-            "[https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60](https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60)",
-            "[https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&auto=format&fit=crop&q=60](https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&auto=format&fit=crop&q=60)",
-            "[https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&auto=format&fit=crop&q=60](https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&auto=format&fit=crop&q=60)",
-            "[https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60](https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60)"
+            "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60",
+            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&auto=format&fit=crop&q=60",
+            "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&auto=format&fit=crop&q=60",
+            "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60"
         ];
 
         async function panggilAIAsli() {
             const kontainerBerita = document.getElementById('berita-ai');
             const tanggalSekarang = dapatkanTanggalHariIni();
 
-            // Pasang animasi loading saat backend bekerja menembak Google Gemini
-            kontainerBerita.innerHTML = `<p class="text-sm text-gray-500 italic animate-bounce text-center py-10">Gemini AI sedang berpikir keras menyusun berita nyata...</p>`;
+            // Loading state yang rapi dengan Tailwind CSS
+            kontainerBerita.innerHTML = `
+                <div class="col-span-full text-center py-10">
+                    <p class="text-sm text-gray-500 italic animate-bounce">Membuka enkripsi data... Gemini AI sedang merangkum berita perdagangan hari ini...</p>
+                </div>
+            `;
 
             try {
-                // MEMANGGIL BACKEND SERVERLESS KITA
                 const response = await fetch('/api/get-news');
                 const dataBeritaDariGemini = await response.json();
 
                 kontainerBerita.innerHTML = `
-                    <p class="text-xs text-gray-400 mb-5 font-mono">Diproses LIVE oleh Gemini AI pada: ${tanggalSekarang}</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <p class="text-xs text-gray-400 mb-5 font-mono col-span-full">Diproses LIVE oleh Gemini AI pada: ${tanggalSekarang}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
                         ${dataBeritaDariGemini.map((berita, indeks) => `
                             <div class="flex flex-col space-y-2 group cursor-pointer">
                                 <div class="w-full h-44 rounded-lg overflow-hidden bg-gray-100">
                                     <img src="${daftarGambar[indeks] || daftarGambar[0]}" alt="Ilustrasi" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                                 </div>
-                                <span class="text-blue-600 font-bold tracking-wider uppercase text-xs pt-1">${berita.kategori}</span>
+                                <span class="text-blue-600 font-bold tracking-wider uppercase text-xs pt-1">${berita.kategori || 'BUSINESS'}</span>
                                 <h3 class="font-bold text-gray-900 text-lg leading-tight line-clamp-2 group-hover:text-blue-600 transition">
                                     ${berita.judul}
                                 </h3>
@@ -98,7 +101,12 @@
                     </div>
                 `;
             } catch (error) {
-                kontainerBerita.innerHTML = `<p class="text-red-500 text-sm">Gagal memuat berita pintar: ${error.message}. Pastikan kamu sudah setting API Key di dashboard Vercel.</p>`;
+                kontainerBerita.innerHTML = `
+                    <div class="col-span-full bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                        <p class="text-red-700 text-sm font-semibold">Gagal memuat sistem AI Pintar</p>
+                        <p class="text-red-500 text-xs mt-1">Alasan: Environment Variable belum aktif atau proses Redeploy di Vercel terlewat.</p>
+                    </div>
+                `;
             }
         }
 
