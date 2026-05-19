@@ -22,7 +22,6 @@ export default async function handler(req, res) {
 
         const data = await response.json();
 
-        // Jika Google memberikan eror (misal API Key salah/expired)
         if (data.error) {
             return res.status(500).json({ 
                 error: "Ditolak Google Gemini", 
@@ -39,7 +38,6 @@ export default async function handler(req, res) {
         return res.status(200).json(jsonBerita);
 
     } catch (error) {
-        // Memuntahkan eror sistem asli ke browser
         return res.status(500).json({ 
             error: "Eror Pemrosesan Backend", 
             detail: error.message 
