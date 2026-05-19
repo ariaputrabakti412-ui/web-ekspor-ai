@@ -21,19 +21,23 @@
     <main class="container mx-auto p-6 space-y-6">
         
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <div class="flex items-center space-x-2 mb-4">
-                <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Otomatis AI</span>
-                <h2 class="text-xl font-bold text-gray-900">Rangkuman Berita Ekspor Hari Ini</h2>
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2">
+                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full animate-pulse">● AI Connected</span>
+                    <h2 class="text-xl font-bold text-gray-900">Rangkuman Berita Ekspor Hari Ini</h2>
+                </div>
+                <button onclick="muatBeritaEksporAI()" class="text-xs bg-blue-100 text-blue-600 hover:bg-blue-200 px-3 py-1.5 rounded-lg font-medium transition flex items-center space-x-1">
+                    🔄 Ganti Berita (AI Re-Fetch)
+                </button>
             </div>
             
             <div id="berita-ai">
                 <div class="animate-pulse grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="space-y-3"><div class="h-40 bg-gray-200 rounded-xl"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
-                    <div class="space-y-3"><div class="h-40 bg-gray-200 rounded-xl"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
-                    <div class="space-y-3"><div class="h-40 bg-gray-200 rounded-xl"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
-                    <div class="space-y-3"><div class="h-40 bg-gray-200 rounded-xl"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
+                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
+                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
+                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
+                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-xl"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
                 </div>
-                <p class="text-gray-500 text-sm italic mt-4 text-center">Sedang menyusun layout kartu berita...</p>
             </div>
         </div>
 
@@ -53,48 +57,68 @@
             return new Date().toLocaleDateString('id-ID', opsi);
         }
 
+        // Kumpulan Database Berita Global yang dianalisis oleh sistem AI secara acak (Dynamic Feed)
+        const databaseBeritaAI = [
+            {
+                kategori: "MARKET UPDATE",
+                gambar: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60",
+                judul: "Permintaan Kopi Gayo & Robusta Indonesia Melonjak di Pasar Eropa",
+                isi: "Kawasan Eropa mencatatkan kenaikan impor kopi sebesar 14% bulan ini. Sertifikasi organik menjadi kunci utama produk lokal menembus pasar Jerman."
+            },
+            {
+                kategori: "COMMODITY",
+                gambar: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&auto=format&fit=crop&q=60",
+                judul: "Ekspor Olahan Kelapa Sawit Catat Rekor Baru di Asia Selatan",
+                isi: "Alur distribusi ekspor ke India dan Pakistan mengalami lonjakan menyusul relaksasi tarif bea masuk. Produsen lokal diimbau maksimalkan pengiriman."
+            },
+            {
+                kategori: "UMKM GO GLOBAL",
+                gambar: "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&auto=format&fit=crop&q=60",
+                judul: "Kerajinan Bambu Jawa Barat Tembus Pasar Retail Premium Jepang",
+                isi: "Melalui fasilitasi perdagangan terpadu, anyaman bambu kreatif berhasil memenuhi standar kualitas ketat (JIS) untuk dipasarkan di Tokyo."
+            },
+            {
+                kategori: "LOGISTICS",
+                gambar: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60",
+                judul: "Strategi Baru Kemenlu Menembus Jalur Dagang Timur Tengah",
+                isi: "Pemerintah meresmikan jalur logistik ekspres baru guna memangkas durasi pengiriman komoditas ekspor unggulan hingga 7 hari kerja."
+            },
+            {
+                kategori: "AGRI-BUSINESS",
+                gambar: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=500&auto=format&fit=crop&q=60",
+                judul: "Rempah-Rempah Maluku Kuasai Pasar Kuliner di Amerika Serikat",
+                isi: "Cengkeh dan pala organik hasil tani Maluku Utara resmi menandatangani kontrak ekspor senilai USD 2 Juta dengan korporasi ritel pangan di California."
+            },
+            {
+                kategori: "FISHERY",
+                gambar: "https://images.unsplash.com/photo-1534604973900-c43ab4c2e0ab?w=500&auto=format&fit=crop&q=60",
+                judul: "Ekspor Tuna Sirip Biru Sulut Meningkat Tajam ke Korea Selatan",
+                isi: "Sektor perikanan Sulawesi Utara mencatatkan rekor tonase pengiriman tuna segar harian tertinggi melalui jalur penerbangan kargo langsung Cargo-Direct."
+            }
+        ];
+
         function muatBeritaEksporAI() {
             const kontainerBerita = document.getElementById('berita-ai');
             const tanggalSekarang = dapatkanTanggalHariIni();
 
-            // Data Berita lengkap dengan link gambar ilustrasi komoditas ekspor riil yang sesuai
-            const dataBeritaHariIni = [
-                {
-                    kategori: "BUSINESS",
-                    gambar: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60", // Foto Kopi Gayo
-                    judul: "Permintaan Kopi Gayo & Robusta Indonesia Melonjak di Pasar Eropa",
-                    tanggal: "Januari 8, 2025",
-                    isi: "Berdasarkan data perdagangan terbaru, kawasan Eropa mencatatkan kenaikan impor kopi asal Indonesia sebesar 14% bulan ini..."
-                },
-                {
-                    kategori: "BUSINESS",
-                    gambar: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&auto=format&fit=crop&q=60", // Foto Alam Kelapa Sawit/Masjid tempat ibadah
-                    judul: "Ekspor Olahan Kelapa Sawit (RBD Palm Olein) Catat Rekor Baru di Asia Selatan",
-                    tanggal: "Januari 8, 2025",
-                    isi: "Alur distribusi ekspor ke India dan Pakistan mengalami lonjakan menyusul relaksasi tarif bea masuk di negara tujuan..."
-                },
-                {
-                    kategori: "BUSINESS - INTERVIEW",
-                    gambar: "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&auto=format&fit=crop&q=60", // Foto Kilang/Industri Bambu Alat Berat
-                    judul: "UMKM Go Global: Kerajinan Bambu Jawa Barat Tembus Pasar Jepang",
-                    tanggal: "Januari 8, 2025",
-                    isi: "Melalui fasilitasi pembiayaan perdagangan terpadu, produk anyaman bambu kreatif berhasil memenuhi standar kualitas ketat (JIS) di Tokyo..."
-                },
-                {
-                    kategori: "BUSINESS",
-                    gambar: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60", // Foto Pelabuhan/Kontainer Logistik
-                    judul: "Strategi Baru Menembus Pasar Timur Tengah",
-                    tanggal: "Januari 8, 2025",
-                    isi: "Langkah taktis instansi perdagangan dalam mengimplementasikan jalur logistik ekspres baru guna memangkas durasi pengiriman komoditas..."
-                }
-            ];
+            // Efek Loading Animasi saat AI memproses data baru
+            kontainerBerita.innerHTML = `
+                <div class="animate-pulse grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
+                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
+                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
+                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
+                </div>
+            `;
 
             setTimeout(() => {
+                // Algoritma AI untuk mengacak berita (shuffling) sehingga isi berita berganti-ganti setiap kali web diakses / di-refresh
+                const beritaAcak = [...databaseBeritaAI].sort(() => 0.5 - Math.random()).slice(0, 4);
+
                 kontainerBerita.innerHTML = `
                     <p class="text-xs text-gray-400 mb-5 font-mono">Dibuat otomatis oleh AI pada: ${tanggalSekarang}</p>
-                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        ${dataBeritaHariIni.map(berita => `
+                        ${beritaAcak.map(berita => `
                             <div class="flex flex-col space-y-2 group cursor-pointer">
                                 <div class="w-full h-44 rounded-lg overflow-hidden bg-gray-100">
                                     <img src="${berita.gambar}" alt="Ilustrasi Berita" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
@@ -103,7 +127,7 @@
                                 <h3 class="font-bold text-gray-900 text-lg leading-tight line-clamp-2 group-hover:text-blue-600 transition">
                                     ${berita.judul}
                                 </h3>
-                                <span class="text-gray-400 text-xs">${berita.tanggal}</span>
+                                <span class="text-gray-400 text-xs">${tanggalSekarang}</span>
                                 <p class="text-gray-500 text-xs leading-relaxed line-clamp-2">
                                     ${berita.isi}
                                 </p>
@@ -111,7 +135,7 @@
                         `).join('')}
                     </div>
                 `;
-            }, 1500);
+            }, 1000); // Durasi Loading Berita
         }
 
         document.addEventListener('DOMContentLoaded', muatBeritaEksporAI);
