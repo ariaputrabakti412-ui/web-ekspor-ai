@@ -44,15 +44,15 @@
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl">
             <h2 class="text-lg font-bold mb-4 text-gray-900">📹 Video Edukasi Terbaru</h2>
             <div class="aspect-video rounded-lg overflow-hidden bg-gray-200">
-                <iframe class="w-full h-full" src="https://www.youtube.com/embed/x_Oq4h_gC6E" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
+                <iframe class="w-full h-full" src="https://www.youtube.com/embed/5F6m9CWhvV8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
-            <h3 class="font-semibold mt-2 text-sm text-gray-800">Edukasi Ekspor Pemula: Cara Mudah Riset Pasar Internasional</h3>
+            <h3 class="font-semibold mt-2 text-sm text-gray-800">Panduan Langkah Demi Langkah Menjadi Eksportir Pemula - Kemenkeu & Kemendag RI</h3>
         </div>
 
     </main>
 
     <script>
-        // API Key aktif milikmu tetap dipertahankan di sini
+        // API Key milikmu yang aktif
         const GEMINI_API_KEY = "AIzaSyBzUv8Clxz9eHtuv9tDC-tQoDChxrkKXvI"; 
 
         function dapatkanTanggalHariIni() {
@@ -77,11 +77,9 @@
                 </div>
             `;
 
-            // Menggunakan URL endpoint /v1/ resmi dengan model dasar gemini-1.5-flash
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-            
-            // Prompt disederhanakan karena strukturnya sudah diatur secara ketat oleh generationConfig di bawah
-            const promptText = "Berikan 4 berita seputar komoditas ekspor Indonesia terbaru hari ini (seperti kopi, sawit, rempah, atau produk UMKM binaan). Pastikan informatif.";
+            // FIX: Menggunakan model resmi 'gemini-1.5-flash-latest' untuk endpoint v1 produksi
+            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+            const promptText = "Berikan 4 berita pendek mengenai komoditas ekspor Indonesia hari ini (seperti kopi, sawit, rempah, atau UMKM).";
 
             try {
                 const response = await fetch(url, {
@@ -89,7 +87,7 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: promptText }] }],
-                        // Memaksa model Gemini memberikan balasan berformat JSON array yang valid
+                        // Memaksa AI mengembalikan struktur data JSON murni yang valid tanpa eror parse
                         generationConfig: {
                             responseMimeType: "application/json",
                             responseSchema: {
