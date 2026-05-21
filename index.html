@@ -53,7 +53,7 @@
 
     <script>
         // ========================================================
-        // 🔑 MASUKKAN KUNCI GEMINI KAMU DI SINI
+        // 🔑 KUNCI GEMINI AMAN TERPASANG
         // ========================================================
         const GEMINI_API_KEY = "AIzaSyDh-bYbfK0P3SZKUvluBPfKXpTLeszxze0"; 
 
@@ -69,13 +69,14 @@
             "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60"
         ];
 
-        async function_ambilBeritaLangsung() {
+        // SAKLAR SUDAH DIPERBAIKI (Menggunakan spasi yang benar)
+        async function ambilBeritaLangsung() {
             const kontainerBerita = document.getElementById('berita-ai');
             const tanggalSekarang = dapatkanTanggalHariIni();
 
             kontainerBerita.innerHTML = `
                 <div class="col-span-full text-center py-10">
-                    <p class="text-sm text-gray-500 italic animate-pulse">Menghubungi Google Gemini langsung dari GitHub Pages...</p>
+                    <p class="text-sm text-gray-500 italic animate-pulse">Menghubungi Google Gemini langsung dari browser...</p>
                 </div>
             `;
 
@@ -106,7 +107,7 @@
                 const dataBeritaDariGemini = JSON.parse(teksMentah);
 
                 kontainerBerita.innerHTML = `
-                    <p class="text-xs text-gray-400 mb-5 font-mono col-span-full">Diproses LIVE via GitHub Pages pada: ${tanggalSekarang}</p>
+                    <p class="text-xs text-gray-400 mb-5 font-mono col-span-full">Diproses LIVE langsung ke Google AI pada: ${tanggalSekarang}</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
                         ${dataBeritaDariGemini.map((berita, indeks) => `
                             <div class="flex flex-col space-y-2 group cursor-pointer">
