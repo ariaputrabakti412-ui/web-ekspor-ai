@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Ekspor AI & Edukasi</title>
+    <title>Portal Ekspor AI - GitHub Pages</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -26,7 +26,7 @@
                     <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full animate-pulse">● Live Gemini AI</span>
                     <h2 class="text-xl font-bold text-gray-900">Rangkuman Berita Ekspor Hari Ini</h2>
                 </div>
-                <button onclick="panggilAIAsli()" class="text-xs bg-blue-100 text-blue-600 hover:bg-blue-200 px-3 py-1.5 rounded-lg font-medium transition">
+                <button onclick="ambilBeritaLangsung()" class="text-xs bg-blue-100 text-blue-600 hover:bg-blue-200 px-3 py-1.5 rounded-lg font-medium transition">
                     🔄 Minta Berita Baru (Live AI)
                 </button>
             </div>
@@ -52,6 +52,11 @@
     </main>
 
     <script>
+        // ========================================================
+        // 🔑 MASUKKAN KUNCI GEMINI KAMU DI SINI
+        // ========================================================
+        const GEMINI_API_KEY = "AIzaSyDh-bYbfK0P3SZKUvluBPfKXpTLeszxze0"; 
+
         function dapatkanTanggalHariIni() {
             const opsi = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date().toLocaleDateString('id-ID', opsi);
@@ -64,34 +69,44 @@
             "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60"
         ];
 
-        async function panggilAIAsli() {
+        async function_ambilBeritaLangsung() {
             const kontainerBerita = document.getElementById('berita-ai');
             const tanggalSekarang = dapatkanTanggalHariIni();
 
             kontainerBerita.innerHTML = `
                 <div class="col-span-full text-center py-10">
-                    <p class="text-sm text-gray-500 italic animate-bounce">Membuka enkripsi data... Gemini AI sedang merangkum berita perdagangan hari ini...</p>
+                    <p class="text-sm text-gray-500 italic animate-pulse">Menghubungi Google Gemini langsung dari GitHub Pages...</p>
                 </div>
             `;
 
-            try {
-                const response = await fetch('/api/get-news');
-                const dataBeritaDariGemini = await response.json();
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            const promptText = "Berikan 4 berita seputar komoditas ekspor Indonesia terbaru hari ini (seperti kopi, sawit, rempah, atau UMKM). Format output WAJIB dalam bentuk JSON array objek mentah, contoh: [{\"kategori\":\"...\",\"judul\":\"...\",\"isi\":\"...\"}]. Jangan berikan kata pembuka, jangan berikan kata penutup, dan JANGAN gunakan bungkus markdown ```json.";
 
-                // Deteksi jika backend mengirimkan object error hasil tangkapan detektif
-                if (dataBeritaDariGemini.error) {
-                    kontainerBerita.innerHTML = `
-                        <div class="col-span-full bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                            <p class="text-red-700 text-sm font-semibold">🚨 Penolakan Sistem Serverless</p>
-                            <p class="text-red-500 text-xs mt-1">Eror: ${dataBeritaDariGemini.error}</p>
-                            <p class="text-gray-600 text-xs mt-1">Detail: ${dataBeritaDariGemini.detail}</p>
-                        </div>
-                    `;
-                    return;
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptText }] }]
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message);
                 }
 
+                let teksMentah = data.candidates[0].content.parts[0].text.trim();
+                
+                if (teksMentah.startsWith("```")) {
+                    teksMentah = teksMentah.replace(/^```json/, "").replace(/^```/, "").replace(/```$/, "").trim();
+                }
+
+                const dataBeritaDariGemini = JSON.parse(teksMentah);
+
                 kontainerBerita.innerHTML = `
-                    <p class="text-xs text-gray-400 mb-5 font-mono col-span-full">Diproses LIVE oleh Gemini AI pada: ${tanggalSekarang}</p>
+                    <p class="text-xs text-gray-400 mb-5 font-mono col-span-full">Diproses LIVE via GitHub Pages pada: ${tanggalSekarang}</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
                         ${dataBeritaDariGemini.map((berita, indeks) => `
                             <div class="flex flex-col space-y-2 group cursor-pointer">
@@ -113,15 +128,14 @@
             } catch (error) {
                 kontainerBerita.innerHTML = `
                     <div class="col-span-full bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                        <p class="text-red-700 text-sm font-semibold">Gagal memuat sistem AI Pintar</p>
-                        <p class="text-red-500 text-xs mt-1">Pesan Sistem: ${error.message}</p>
-                        <p class="text-gray-500 text-xs mt-1 font-mono">Buka tab 'Logs' di Vercel untuk info detail.</p>
+                        <p class="text-red-700 text-sm font-semibold">Gagal Mengambil Data AI</p>
+                        <p class="text-red-500 text-xs mt-1">Alasan: ${error.message}</p>
                     </div>
                 `;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', panggilAIAsli);
+        document.addEventListener('DOMContentLoaded', ambilBeritaLangsung);
     </script>
 </body>
 </html>
