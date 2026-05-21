@@ -69,7 +69,6 @@
             "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60"
         ];
 
-        // SAKLAR SUDAH DIPERBAIKI (Menggunakan spasi yang benar)
         async function ambilBeritaLangsung() {
             const kontainerBerita = document.getElementById('berita-ai');
             const tanggalSekarang = dapatkanTanggalHariIni();
@@ -80,7 +79,8 @@
                 </div>
             `;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            // FIXED: Menggunakan versi model rilis stabil terbaru (gemini-1.5-flash-latest)
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
             const promptText = "Berikan 4 berita seputar komoditas ekspor Indonesia terbaru hari ini (seperti kopi, sawit, rempah, atau UMKM). Format output WAJIB dalam bentuk JSON array objek mentah, contoh: [{\"kategori\":\"...\",\"judul\":\"...\",\"isi\":\"...\"}]. Jangan berikan kata pembuka, jangan berikan kata penutup, dan JANGAN gunakan bungkus markdown ```json.";
 
             try {
@@ -100,9 +100,10 @@
 
                 let teksMentah = data.candidates[0].content.parts[0].text.trim();
                 
-                if (teksMentah.startsWith("```")) {
-                    teksMentah = teksMentah.replace(/^```json/, "").replace(/^```/, "").replace(/```$/, "").trim();
-                }
+                // FIXED: Penyaring bungkusan markdown yang jauh lebih kuat dan aman
+                teksMentah = teksMentah.replace(/```json/gi, "")
+                                       .replace(/```/g, "")
+                                       .trim();
 
                 const dataBeritaDariGemini = JSON.parse(teksMentah);
 
@@ -114,7 +115,7 @@
                                 <div class="w-full h-44 rounded-lg overflow-hidden bg-gray-100">
                                     <img src="${daftarGambar[indeks] || daftarGambar[0]}" alt="Ilustrasi" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                                 </div>
-                                <span class="text-blue-600 font-bold tracking-wider uppercase text-xs pt-1">${berita.kategori || 'BUSINESS'}</span>
+                                <span class="text-blue-600 font-bold tracking-wider uppercase text-xs pt-1">${berita.kategori || 'EKSPOR'}</span>
                                 <h3 class="font-bold text-gray-900 text-lg leading-tight line-clamp-2 group-hover:text-blue-600 transition">
                                     ${berita.judul}
                                 </h3>
