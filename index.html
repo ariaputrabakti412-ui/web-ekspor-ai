@@ -31,7 +31,7 @@
                 </button>
             </div>
             
-            <div id="berita-ai">
+            <div id="berita-ai" class="prose max-w-none">
                 <div class="animate-pulse grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
                     <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
@@ -52,22 +52,12 @@
     </main>
 
     <script>
-        // ========================================================
-        // 🔑 KUNCI GEMINI AMAN TERPASANG
-        // ========================================================
         const GEMINI_API_KEY = "AIzaSyDh-bYbfK0P3SZKUvluBPfKXpTLeszxze0"; 
 
         function dapatkanTanggalHariIni() {
             const opsi = { year: 'numeric', month: 'long', day: 'numeric' };
             return new Date().toLocaleDateString('id-ID', opsi);
         }
-
-        const daftarGambar = [
-            "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60",
-            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&auto=format&fit=crop&q=60",
-            "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&auto=format&fit=crop&q=60",
-            "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60"
-        ];
 
         async function ambilBeritaLangsung() {
             const kontainerBerita = document.getElementById('berita-ai');
@@ -79,9 +69,11 @@
                 </div>
             `;
 
-            // MODIFIKASI FINAL: Menggunakan endpoint resmi model gemini-2.5-flash terbaru
+            // MENGGUNAKAN MODEL 2.5-FLASH DENGAN FALLBACK TEXT FORMATTING
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-            const promptText = "Berikan 4 berita seputar komoditas ekspor Indonesia terbaru hari ini (seperti kopi, sawit, rempah, atau UMKM). Format output WAJIB dalam bentuk JSON array objek mentah, contoh: [{\"kategori\":\"...\",\"judul\":\"...\",\"isi\":\"...\"}]. Jangan berikan kata pembuka, jangan berikan kata penutup, dan JANGAN gunakan bungkus markdown ```json.";
+            
+            // Prompt diubah menjadi format teks biasa berstruktur HTML agar browser langsung paham tanpa parsing JSON
+            const promptText = "Tuliskan 4 berita singkat ter-update hari ini mengenai perkembangan ekspor Indonesia (seperti kopi, rempah, sawit, atau komoditas UMKM). Kembalikan hasilnya dalam struktur HTML div pembungkus yang rapi dengan Tailwind CSS (gunakan layout grid-cols-1 md:grid-cols-2 gap-4, berikan judul tebal, kategori berwarna biru, dan isi ringkas). Jangan gunakan bungkusan markdown ```html ataupun ```.";
 
             try {
                 const response = await fetch(url, {
@@ -98,40 +90,23 @@
                     throw new Error(data.error.message);
                 }
 
-                let teksMentah = data.candidates[0].content.parts[0].text.trim();
+                let hasilTeksAI = data.candidates[0].content.parts[0].text.trim();
                 
-                // Penyaring bungkusan markdown yang jauh lebih kuat dan aman
-                teksMentah = teksMentah.replace(/```json/gi, "")
-                                       .replace(/```/g, "")
-                                       .trim();
+                // Pembersihan tag bungkusan jika AI tidak sengaja memberikannya
+                hasilTeksAI = hasilTeksAI.replace(/```html/gi, "").replace(/```/g, "").trim();
 
-                const dataBeritaDariGemini = JSON.parse(teksMentah);
-
+                // LANGSUNG TEMPEL: Tanpa JSON.parse, dijamin anti-macet loading!
                 kontainerBerita.innerHTML = `
-                    <p class="text-xs text-gray-400 mb-5 font-mono col-span-full">Diproses LIVE langsung ke Google AI pada: ${tanggalSekarang}</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-                        ${dataBeritaDariGemini.map((berita, indeks) => `
-                            <div class="flex flex-col space-y-2 group cursor-pointer">
-                                <div class="w-full h-44 rounded-lg overflow-hidden bg-gray-100">
-                                    <img src="${daftarGambar[indeks] || daftarGambar[0]}" alt="Ilustrasi" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                                </div>
-                                <span class="text-blue-600 font-bold tracking-wider uppercase text-xs pt-1">${berita.kategori || 'EKSPOR'}</span>
-                                <h3 class="font-bold text-gray-900 text-lg leading-tight line-clamp-2 group-hover:text-blue-600 transition">
-                                    ${berita.judul}
-                                </h3>
-                                <span class="text-gray-400 text-xs">${tanggalSekarang}</span>
-                                <p class="text-gray-500 text-xs leading-relaxed line-clamp-3">
-                                    ${berita.isi}
-                                </p>
-                            </div>
-                        `).join('')}
+                    <p class="text-xs text-gray-400 mb-4 font-mono">Diproses LIVE via Google AI pada: ${tanggalSekarang}</p>
+                    <div class="w-full">
+                        ${hasilTeksAI}
                     </div>
                 `;
             } catch (error) {
                 kontainerBerita.innerHTML = `
-                    <div class="col-span-full bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
                         <p class="text-red-700 text-sm font-semibold">Gagal Mengambil Data AI</p>
-                        <p class="text-red-500 text-xs mt-1">Alasan: ${error.message}</p>
+                        <p class="text-red-500 text-xs mt-1">Alasan / Pesan Sistem: ${error.message}</p>
                     </div>
                 `;
             }
