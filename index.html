@@ -52,7 +52,7 @@
     </main>
 
     <script>
-        // TEMPELKAN KEY BARU DI SINI
+        // API Key aktif milikmu tetap dipertahankan di sini
         const GEMINI_API_KEY = "AIzaSyBzUv8Clxz9eHtuv9tDC-tQoDChxrkKXvI"; 
 
         function dapatkanTanggalHariIni() {
@@ -77,15 +77,34 @@
                 </div>
             `;
 
+            // Menggunakan URL endpoint /v1/ resmi dengan model dasar gemini-1.5-flash
             const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-            const promptText = "Berikan 4 berita seputar komoditas ekspor Indonesia terbaru hari ini (seperti kopi, sawit, rempah, atau UMKM). Format output WAJIB dalam bentuk JSON array objek mentah, contoh: [{\"kategori\":\"...\",\"judul\":\"...\",\"isi\":\"...\"}]. Jangan berikan kata pembuka, jangan berikan kata penutup, dan JANGAN gunakan bungkus markdown ```json.";
+            
+            // Prompt disederhanakan karena strukturnya sudah diatur secara ketat oleh generationConfig di bawah
+            const promptText = "Berikan 4 berita seputar komoditas ekspor Indonesia terbaru hari ini (seperti kopi, sawit, rempah, atau produk UMKM binaan). Pastikan informatif.";
 
             try {
                 const response = await fetch(url, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: promptText }] }]
+                        contents: [{ parts: [{ text: promptText }] }],
+                        // Memaksa model Gemini memberikan balasan berformat JSON array yang valid
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        kategori: { type: "STRING" },
+                                        judul: { type: "STRING" },
+                                        isi: { type: "STRING" }
+                                    },
+                                    required: ["kategori", "judul", "isi"]
+                                }
+                            }
+                        }
                     })
                 });
 
@@ -95,12 +114,10 @@
                     throw new Error(data.error.message);
                 }
 
-                let teksMentah = data.candidates[0].content.parts[0].text.trim();
+                // Mengambil string teks JSON langsung dari respon struktur Google AI
+                const teksMentah = data.candidates[0].content.parts[0].text.trim();
                 
-                teksMentah = teksMentah.replace(/```json/gi, "")
-                                       .replace(/```/g, "")
-                                       .trim();
-
+                // Melakukan parsing data teks menjadi array objek JavaScript asli
                 const dataBeritaDariGemini = JSON.parse(teksMentah);
 
                 kontainerBerita.innerHTML = `
