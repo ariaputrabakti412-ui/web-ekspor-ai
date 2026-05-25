@@ -6,10 +6,10 @@ export default async function handler(req, res) {
 
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    const GROQ_API_KEY = process.env.GEMINI_API_KEY; 
+    // Menggunakan penamaan Environment Variable yang sesuai dengan layanannya
+    const GROQ_API_KEY = process.env.GROQ_API_KEY; 
     const url = "https://api.groq.com/openai/v1/chat/completions";
 
-    // OPTIMASI PROMPT: Memaksa AI mengacak topik komoditas & keyword gambar setiap kali dipanggil
     const promptStrukturKoran = `
     Bertindaklah sebagai Pemimpin Redaksi koran internasional modern. Buat data berita ekspor/perdagangan global secara acak, bervariasi, dan dinamis mengenai komoditas yang berbeda setiap kali diminta (seperti nikel, tekstil, otomotif, aviasi, kopi, kelapa sawit, laut, atau teknologi).
     
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
                 model: "llama-3.3-70b-versatile", 
                 messages: [{ role: "user", content: promptStrukturKoran }],
                 response_format: { type: "json_object" }, 
-                temperature: 1.2 // Dinaikkan sedikit agar AI lebih kreatif dan tidak mengulang topik yang sama
+                temperature: 1.2 
             })
         });
 
