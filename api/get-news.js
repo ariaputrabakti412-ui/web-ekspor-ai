@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     if (req.method === 'OPTIONS') return res.status(200).end();
 
     // Pastikan nama Environment Variable ini sesuai dengan yang terdaftar di Vercel
-    const GROQ_API_KEY = "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";
+    const GROQ_API_KEY = process.env.GROQ_API_KEY;
     const url = "https://api.groq.com/openai/v1/chat/completions";
 
     const promptStrukturKoran = `
