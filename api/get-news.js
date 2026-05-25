@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-    // Pengaturan Header CORS agar browser tidak memblokir penerimaan data
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -8,11 +7,10 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
-    // API Key milikmu
     const GEMINI_API_KEY = "AIzaSyA6fwNUiHNxkWbjuQplL8pl76nMEkEJJIM";
     
-    // PERBAIKAN: Menggunakan rute v1 dipadukan dengan model gemini-1.5-flash-latest secara presisi
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+    // MENGGUNAKAN GEMINI 2.5 FLASH (Versi paling update, super cepat, dan stabil di v1)
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
     const requestData = {
         contents: [{
@@ -37,10 +35,7 @@ export default async function handler(req, res) {
             });
         }
 
-        // Ambil data teks murninya
         const teksHasilAI = data.candidates[0].content.parts[0].text;
-        
-        // Kirimkan balik hasilnya ke browser index.html
         return res.status(200).json({ berita: teksHasilAI });
 
     } catch (error) {
