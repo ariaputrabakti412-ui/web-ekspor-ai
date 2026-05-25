@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Ekspor AI - GitHub Pages</title>
+    <title>Portal HubEkspor AI - Live Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -31,123 +31,64 @@
                 </button>
             </div>
             
-            <div id="berita-ai">
-                <div class="animate-pulse grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
-                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
-                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
-                    <div class="space-y-3"><div class="h-44 bg-gray-200 rounded-lg"></div><div class="h-4 bg-gray-200 rounded w-1/3"></div><div class="h-6 bg-gray-200 rounded"></div><div class="h-4 bg-gray-200 rounded w-5/6"></div></div>
+            <div id="berita-ai" class="text-gray-700 leading-relaxed space-y-4">
+                <div class="animate-pulse space-y-3 py-4">
+                    <div class="h-4 bg-gray-200 rounded w-1/4"></div>
+                    <div class="h-4 bg-gray-200 rounded w-full"></div>
+                    <div class="h-4 bg-gray-200 rounded w-5/6"></div>
                 </div>
             </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 max-w-2xl">
-            <h2 class="text-lg font-bold mb-4 text-gray-900">📹 Video Edukasi Terbaru</h2>
-            <div class="aspect-video rounded-lg overflow-hidden bg-gray-200">
-                <iframe class="w-full h-full" src="https://www.youtube.com/embed/5F6m9CWhvV8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-            <h3 class="font-semibold mt-2 text-sm text-gray-800">Panduan Langkah Demi Langkah Menjadi Eksportir Pemula - Kemenkeu & Kemendag RI</h3>
         </div>
 
     </main>
 
     <script>
-        // API Key milikmu yang aktif
-        const GEMINI_API_KEY = "AIzaSyBzUv8Clxz9eHtuv9tDC-tQoDChxrkKXvI"; 
-
-        function dapatkanTanggalHariIni() {
-            const opsi = { year: 'numeric', month: 'long', day: 'numeric' };
-            return new Date().toLocaleDateString('id-ID', opsi);
-        }
-
-        const daftarGambar = [
-            "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60",
-            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500&auto=format&fit=crop&q=60",
-            "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&auto=format&fit=crop&q=60",
-            "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=500&auto=format&fit=crop&q=60"
-        ];
-
         async function ambilBeritaLangsung() {
             const kontainerBerita = document.getElementById('berita-ai');
-            const tanggalSekarang = dapatkanTanggalHariIni();
-
+            
             kontainerBerita.innerHTML = `
-                <div class="col-span-full text-center py-10">
-                    <p class="text-sm text-gray-500 italic animate-pulse">Menghubungi Google Gemini langsung dari browser...</p>
-                </div>
+                <p class="text-sm text-gray-500 italic animate-pulse py-4">⏳ Menghubungi server Vercel untuk mengambil data AI secara aman...</p>
             `;
 
-            // FIX: Menggunakan model resmi 'gemini-1.5-flash-latest' untuk endpoint v1 produksi
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
-            const promptText = "Berikan 4 berita pendek mengenai komoditas ekspor Indonesia hari ini (seperti kopi, sawit, rempah, atau UMKM).";
+            // URL menembak fungsi backend internal Vercel Serverless kita
+            const url = "/api/get-news";
 
             try {
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: promptText }] }],
-                        // Memaksa AI mengembalikan struktur data JSON murni yang valid tanpa eror parse
-                        generationConfig: {
-                            responseMimeType: "application/json",
-                            responseSchema: {
-                                type: "ARRAY",
-                                items: {
-                                    type: "OBJECT",
-                                    properties: {
-                                        kategori: { type: "STRING" },
-                                        judul: { type: "STRING" },
-                                        isi: { type: "STRING" }
-                                    },
-                                    required: ["kategori", "judul", "isi"]
-                                }
-                            }
-                        }
-                    })
-                });
-
+                const response = await fetch(url);
                 const data = await response.json();
-                
-                if (data.error) {
-                    throw new Error(data.error.message);
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Gagal mengambil data dari server");
                 }
 
-                // Mengambil string teks JSON langsung dari respon struktur Google AI
-                const teksMentah = data.candidates[0].content.parts[0].text.trim();
-                
-                // Melakukan parsing data teks menjadi array objek JavaScript asli
-                const dataBeritaDariGemini = JSON.parse(teksMentah);
+                // Merapikan format markdown bawaan AI agar ramah di halaman HTML
+                let teksRapi = data.berita
+                    .replace(/\n/g, '<br>')
+                    .replace(/\*/g, '•')
+                    .replace(/-/g, '•')
+                    .replace(/##/g, '<br><strong class="text-blue-600">')
+                    .replace(/#/g, '');
 
                 kontainerBerita.innerHTML = `
-                    <p class="text-xs text-gray-400 mb-5 font-mono col-span-full">Diproses LIVE langsung ke Google AI pada: ${tanggalSekarang}</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-                        ${dataBeritaDariGemini.map((berita, indeks) => `
-                            <div class="flex flex-col space-y-2 group cursor-pointer">
-                                <div class="w-full h-44 rounded-lg overflow-hidden bg-gray-100">
-                                    <img src="${daftarGambar[indeks] || daftarGambar[0]}" alt="Ilustrasi" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                                </div>
-                                <span class="text-blue-600 font-bold tracking-wider uppercase text-xs pt-1">${berita.kategori || 'EKSPOR'}</span>
-                                <h3 class="font-bold text-gray-900 text-lg leading-tight line-clamp-2 group-hover:text-blue-600 transition">
-                                    ${berita.judul}
-                                </h3>
-                                <span class="text-gray-400 text-xs">${tanggalSekarang}</span>
-                                <p class="text-gray-500 text-xs leading-relaxed line-clamp-3">
-                                    ${berita.isi}
-                                </p>
-                            </div>
-                        `).join('')}
+                    <div class="bg-blue-50/60 p-5 rounded-xl border border-blue-100 text-base font-normal shadow-sm">
+                        ${teksRapi}
                     </div>
                 `;
+
             } catch (error) {
                 kontainerBerita.innerHTML = `
-                    <div class="col-span-full bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                        <p class="text-red-700 text-sm font-semibold">Gagal Mengambil Data AI</p>
-                        <p class="text-red-500 text-xs mt-1">Alasan: ${error.message}</p>
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl">
+                        <p class="text-red-700 text-sm font-semibold">Gagal Memuat Rangkuman AI</p>
+                        <p class="text-red-500 text-xs mt-1">Kendala Server: ${error.message}</p>
                     </div>
                 `;
             }
         }
 
+        // Daftarkan ke objek window agar tombol onclick HTML bisa mendeteksi
+        window.ambilBeritaLangsung = ambilBeritaLangsung;
+
+        // Jalankan otomatis begitu halaman web terbuka sempurna
         document.addEventListener('DOMContentLoaded', ambilBeritaLangsung);
     </script>
 </body>
