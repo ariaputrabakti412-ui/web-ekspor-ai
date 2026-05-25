@@ -6,23 +6,24 @@ export default async function handler(req, res) {
 
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    // Kita tetap panggil nama variable lama di Vercel agar kamu tidak perlu repot setting ulang env
+    const GROQ_API_KEY = process.env.GEMINI_API_KEY; 
+    const url = "https://api.groq.com/openai/v1/chat/completions";
 
-    // Kita perketat perintah teksnya agar outputnya dijamin berupa JSON murni tanpa mark tag ```json
     const promptStrukturKoran = `
-    Bertindaklah sebagai Pemimpin Redaksi koran internasional modern. Tugasmu adalah membuat data berita ekspor/perdagangan global secara acak, bervariasi, dan dinamis agar pembaca tidak bosan. Pilih 5-6 sektor komoditas yang luas secara bebas (seperti tekstil, aviasi, otomotif, nikel, perikanan, atau bursa komoditas) dan buat ceritanya seolah-olah terjadi hari ini.
+    Bertindaklah sebagai Pemimpin Redaksi koran internasional modern. Buat data berita ekspor/perdagangan global secara acak, bervariasi, dan dinamis mengenai komoditas (seperti nikel, tekstil, otomotif, aviasi, dll).
+    
+    Wajib kembalikan respon dalam bentuk JSON murni tanpa gaya markdown (TANPA tanda backtick \`\`\`json).
 
-    WAJIB KEMBALIKAN RESPONS DALAM BENTUK JSON STRUCTURAL SAJA. DILARANG KERAS menyertakan backtick markdown (\`\`\`json atau \`\`\`), dilarang memberikan teks pembuka, dan dilarang memberikan teks penutup.
-
-    Ikuti struktur JSON di bawah ini persis:
+    Struktur JSON wajib persis seperti ini:
     {
         "hero": {
             "kategori": "BUSINESS",
-            "judul": "Judul berita utama ekspor yang menarik",
-            "penulis": "Nama Editor",
+            "judul": "Judul berita utama ekspor yang bombastis dan menarik",
+            "penulis": "Aria Putra",
             "tanggal": "Mei 25, 2026",
-            "isi": "Tulis 1 paragraf berita utama yang lengkap, panjang, dan detail di sini."
+            "isi": "Tulis 1 paragraf berita utama yang lengkap, panjang, dan detail di sini.",
+            "keyword_gambar": "mining,factory"
         },
         "latest": [
             { "judul": "Judul berita singkat acak 1", "tanggal": "Mei 25, 2026", "penulis": "Wartawan AI" },
@@ -30,13 +31,13 @@ export default async function handler(req, res) {
             { "judul": "Judul berita singkat acak 3", "tanggal": "Mei 25, 2026", "penulis": "Wartawan AI" }
         ],
         "kategori_business": [
-            { "judul": "Judul berita industri komoditas acak", "isi": "Penjelasan detail mengenai inovasi bisnis ekspor.", "tanggal": "Mei 25, 2026" }
+            { "judul": "Judul berita bisnis komoditas", "isi": "Penjelasan detail mengenai inovasi bisnis ekspor.", "tanggal": "Mei 25, 2026" }
         ],
         "kategori_travel": [
-            { "judul": "Judul rute logistik global acak", "isi": "Penjelasan detail mengenai pengapalan dan transportasi perdagangan global.", "tanggal": "Mei 25, 2026" }
+            { "judul": "Judul rute logistik atau pengapalan global", "isi": "Penjelasan detail mengenai transportasi perdagangan global.", "tanggal": "Mei 25, 2026" }
         ],
         "kategori_politics": [
-            { "judul": "Judul kebijakan dagang internasional", "isi": "Penjelasan detail regulasi tarif atau aturan pemerintah baru.", "tanggal": "Mei 25, 2026" }
+            { "judul": "Judul kebijakan tarif dagang", "isi": "Penjelasan detail regulasi tarif atau aturan pemerintah baru.", "tanggal": "Mei 25, 2026" }
         ]
     }
     `;
@@ -44,28 +45,22 @@ export default async function handler(req, res) {
     try {
         const response = await fetch(url, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Authorization": `Bearer ${GROQ_API_KEY}`,
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: promptStrukturKoran }] }],
-                // PERBAIKAN: Parameter generationConfig yang memicu eror di v1 URL telah kita buang total!
-                generationConfig: { 
-                    temperature: 1.0 
-                }
+                model: "llama3-8b-8192", // Model gratis, super cepat, dan stabil milik Groq
+                messages: [{ role: "user", content: promptStrukturKoran }],
+                response_format: { type: "json_object" }, // Mengunci output wajib JSON murni
+                temperature: 1.0
             })
         });
 
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error?.message || "Google Gemini Error");
+        if (!response.ok) throw new Error(data.error?.message || "Groq API Error");
 
-        let teksJsonHasilAI = data.candidates[0].content.parts[0].text.trim();
-        
-        // Proteksi tambahan: jika AI bandel menyelipkan tag ```json, kita bersihkan secara manual di backend
-        if (teksJsonHasilAI.startsWith("```json")) {
-            teksJsonHasilAI = teksJsonHasilAI.replace(/^```json/, "").replace(/```$/, "").trim();
-        } else if (teksJsonHasilAI.startsWith("```")) {
-            teksJsonHasilAI = teksJsonHasilAI.replace(/^```/, "").replace(/```$/, "").trim();
-        }
-
+        const teksJsonHasilAI = data.choices[0].message.content.trim();
         return res.status(200).json({ berita: teksJsonHasilAI });
 
     } catch (error) {
