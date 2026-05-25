@@ -8,11 +8,11 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
 
-    // API Key kamu aman di sini, tidak akan bisa di-inspect oleh pengunjung web
+    // API Key milikmu
     const GEMINI_API_KEY = "AIzaSyA6fwNUiHNxkWbjuQplL8pl76nMEkEJJIM";
     
-    // Menggunakan endpoint v1 yang stabil di sisi backend server
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    // PERBAIKAN: Menggunakan rute v1 dipadukan dengan model gemini-1.5-flash-latest secara presisi
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
     const requestData = {
         contents: [{
