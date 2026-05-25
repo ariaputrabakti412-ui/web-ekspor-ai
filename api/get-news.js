@@ -9,24 +9,26 @@ export default async function handler(req, res) {
     const GROQ_API_KEY = process.env.GEMINI_API_KEY; 
     const url = "https://api.groq.com/openai/v1/chat/completions";
 
+    // OPTIMASI PROMPT: Memaksa AI mengacak topik komoditas & keyword gambar setiap kali dipanggil
     const promptStrukturKoran = `
-    Bertindaklah sebagai Pemimpin Redaksi koran internasional modern. Buat data berita ekspor/perdagangan global secara acak, bervariasi, dan dinamis mengenai komoditas (seperti nikel, tekstil, otomotif, aviasi, dll).
-    Wajib kembalikan respon dalam bentuk JSON murni tanpa gaya markdown (TANPA tanda backtick).
+    Bertindaklah sebagai Pemimpin Redaksi koran internasional modern. Buat data berita ekspor/perdagangan global secara acak, bervariasi, dan dinamis mengenai komoditas yang berbeda setiap kali diminta (seperti nikel, tekstil, otomotif, aviasi, kopi, kelapa sawit, laut, atau teknologi).
+    
+    Wajib kembalikan respon dalam bentuk JSON murni tanpa gaya markdown (TANPA tanda backtick \`\`\`json).
 
     Struktur JSON wajib persis seperti ini:
     {
         "hero": {
             "kategori": "BUSINESS",
-            "judul": "Judul berita utama ekspor yang bombastis dan menarik",
+            "judul": "Judul berita utama ekspor yang bombastis, segar, dan menarik",
             "penulis": "Aria Putra",
             "tanggal": "Mei 25, 2026",
             "isi": "Tulis 1 paragraf berita utama yang lengkap, panjang, dan detail di sini.",
-            "keyword_gambar": "mining,factory"
+            "keyword_gambar": "Berikan 1 atau 2 kata kunci bahasa Inggris yang sesuai dengan judul berita utama di atas untuk pencarian gambar (contoh: 'cargo,ship' jika tentang logistik, atau 'indonesia,coffee' jika tentang kopi, atau 'ev,battery' jika tentang nikel)"
         },
         "latest": [
-            { "judul": "Judul berita singkat acak 1", "tanggal": "Mei 25, 2026", "penulis": "Wartawan AI" },
-            { "judul": "Judul berita singkat acak 2", "tanggal": "Mei 25, 2026", "penulis": "Wartawan AI" },
-            { "judul": "Judul berita singkat acak 3", "tanggal": "Mei 25, 2026", "penulis": "Wartawan AI" }
+            { "judul": "Judul berita singkat acak tentang perdagangan 1", "tanggal": "Mei 25, 2026", "penulis": "Wartawan AI" },
+            { "judul": "Judul berita singkat acak tentang perdagangan 2", "tanggal": "Mei 25, 2026", "penulis": "Wartawan AI" },
+            { "judul": "Judul berita singkat acak tentang perdagangan 3", "tanggal": "Mei 25, 2026", "penulis": "Wartawan AI" }
         ],
         "kategori_business": [
             { "judul": "Judul berita bisnis komoditas", "isi": "Penjelasan detail mengenai inovasi bisnis ekspor.", "tanggal": "Mei 25, 2026" }
@@ -48,11 +50,10 @@ export default async function handler(req, res) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                // INI YANG HARUS DIPASTIKAN BERUBAH: Model baru yang aktif 100%
                 model: "llama-3.3-70b-versatile", 
                 messages: [{ role: "user", content: promptStrukturKoran }],
                 response_format: { type: "json_object" }, 
-                temperature: 1.0
+                temperature: 1.2 // Dinaikkan sedikit agar AI lebih kreatif dan tidak mengulang topik yang sama
             })
         });
 
