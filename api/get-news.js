@@ -1,42 +1,51 @@
-async function generateAllNews() {
-    const errorContainer = document.getElementById("error-container"); // Sesuaikan dengan ID elemen eror merahmu
-    const errorText = document.getElementById("error-text"); 
-    
+export default async function handler(req, res) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') return res.status(200).end();
+
+    const GROQ_API_KEY = process.env.GROQ_API_KEY;
+    const url = "https://api.groq.com/openai/v1/chat/completions";
+
+    const promptStrukturKoran = `
+    Bertindaklah sebagai Pemimpin Redaksi koran internasional modern. Buat data berita ekspor/perdagangan global secara acak dan dinamis.
+    Wajib kembalikan respon dalam bentuk JSON murni tanpa markdown \`\`\`json.
+    Struktur JSON:
+    {
+        "hero": { "kategori": "BUSINESS", "judul": "Berita Utama Ekspor", "penulis": "Aria Putra", "tanggal": "Mei 25, 2026", "isi": "Detail paragraf.", "keyword_gambar": "cargo" },
+        "latest": [
+            { "judul": "Berita Singkat 1", "tanggal": "Mei 25, 2026", "penulis": "AI" },
+            { "judul": "Berita Singkat 2", "tanggal": "Mei 25, 2026", "penulis": "AI" },
+            { "judul": "Berita Singkat 3", "tanggal": "Mei 25, 2026", "penulis": "AI" }
+        ],
+        "kategori_business": [{ "judul": "Bisnis", "isi": "Detail.", "tanggal": "Mei 25, 2026" }],
+        "kategori_travel": [{ "judul": "Logistik", "isi": "Detail.", "tanggal": "Mei 25, 2026" }],
+        "kategori_politics": [{ "judul": "Regulasi", "isi": "Detail.", "tanggal": "Mei 25, 2026" }]
+    }`;
+
     try {
-        // Panggil endpoint backend Vercel Serverless
-        const response = await fetch("/api/get-news");
-        
-        // Ambil teks mentah terlebih dahulu untuk diperiksa jika terjadi kegagalan parsing
-        const rawText = await response.text();
-        
-        // CETAK DI KONSOL: Ini sangat penting untuk melihat isi respons asli jika eror berlanjut
-        console.log("Respons Mentah Server:", rawText);
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${GROQ_API_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [{ role: "user", content: promptStrukturKoran }],
+                response_format: { type: "json_object" },
+                temperature: 0.7
+            })
+        });
 
-        // Validasi jika server mengembalikan halaman HTML eror bukannya string JSON
-        if (rawText.trim().startsWith("<")) {
-            throw new Error("Server backend mengembalikan HTML, bukan data JSON berita.");
-        }
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error?.message || "Groq Error");
 
-        // Jalankan parsing secara aman
-        const dataBerita = JSON.parse(rawText);
-
-        if (dataBerita.error) {
-            throw new Error(dataBerita.error);
-        }
-
-        // Teruskan objek berita yang valid ke fungsi pembuat elemen HTML kamu
-        // Contoh: renderBeritaKeUI(dataBerita);
-        
-        // Sembunyikan kotak eror jika berhasil
-        if (errorContainer) errorContainer.style.display = "none";
+        const hasilTeks = JSON.parse(data.choices[0].message.content.trim());
+        return res.status(200).json(hasilTeks);
 
     } catch (error) {
-        console.error("Detail Eror Frontend:", error);
-        
-        // Tampilkan pesan kegagalan secara rapi di antarmuka web
-        if (errorContainer && errorText) {
-            errorContainer.style.display = "block";
-            errorText.innerText = error.message || "Gagal memuat struktur berita digital.";
-        }
+        return res.status(500).json({ error: error.message });
     }
 }
