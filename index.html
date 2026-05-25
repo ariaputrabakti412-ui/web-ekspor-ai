@@ -47,16 +47,18 @@
                         <span id="hero-date">Date</span>
                     </div>
                 </div>
-                <div class="w-full h-80 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg flex items-center justify-center text-gray-400 font-bold shadow-inner">
-                    📷 Main News Image Representation
+                
+                <div class="w-full h-96 bg-gray-200 rounded-lg overflow-hidden shadow-sm relative flex items-center justify-center">
+                    <img id="hero-image" src="" alt="News Image" class="w-full h-full object-cover hidden" onload="this.classList.remove('hidden')">
+                    <div id="image-loader" class="absolute text-xs text-gray-400 font-medium animate-pulse">🖼️ Mengunduh gambar ilustrasi topik...</div>
                 </div>
+
                 <p id="hero-body" class="text-gray-600 leading-relaxed text-base">Loading story content...</p>
             </div>
 
             <div class="space-y-6">
                 <h3 class="text-sm font-black uppercase tracking-wider border-b-2 border-black pb-2 text-gray-900">Latest News</h3>
-                <div id="latest-container" class="space-y-6 divide-y divide-gray-100">
-                    </div>
+                <div id="latest-container" class="space-y-6 divide-y divide-gray-100"></div>
             </div>
 
         </div>
@@ -91,17 +93,21 @@
             const loadingState = document.getElementById('loading-state');
             const portalContent = document.getElementById('portal-content');
             
+            loadingState.innerHTML = `
+                <p class="text-xl font-medium text-gray-500 animate-pulse">⏳ Meminta Gemini AI merancang dan menulis seluruh isi koran digital hari ini...</p>
+                <div class="max-w-xl mx-auto bg-gray-200 h-2 rounded overflow-hidden">
+                    <div class="bg-blue-600 h-full animate-infinite w-1/2 rounded"></div>
+                </div>
+            `;
             loadingState.classList.remove('hidden');
             portalContent.classList.add('hidden');
 
             try {
-                // Tembak backend Vercel kita
                 const response = await fetch('/api/get-news');
                 const data = await response.json();
 
                 if (!response.ok) throw new Error(data.error || "Gagal mengambil data");
 
-                // Parse struktur JSON yang dikirimkan oleh AI
                 const portalData = JSON.parse(data.berita);
 
                 // 1. ISI DATA HERO (BERITA UTAMA)
@@ -110,6 +116,31 @@
                 document.getElementById('hero-author').innerText = "By " + portalData.hero.penulis;
                 document.getElementById('hero-date').innerText = portalData.hero.tanggal;
                 document.getElementById('hero-body').innerText = portalData.hero.isi;
+
+                // =========================================================================
+                // PERBAIKAN LOGIKA: Pengambilan Gambar Unsplash Secara Instan Lewat Frontend
+                // =========================================================================
+                const keyword = portalData.hero.keyword_gambar || "business,economy";
+                const imgElement = document.getElementById('hero-image');
+                const loaderElement = document.getElementById('image-loader');
+
+                imgElement.classList.add('hidden');
+                loaderElement.classList.remove('hidden');
+
+                const angkaAcakBypassCache = Math.floor(Math.random() * 100000);
+                imgElement.src = `https://images.unsplash.com/featured/1200x800/?${encodeURIComponent(keyword)}&sig=${angkaAcakBypassCache}`;
+
+                imgElement.onload = () => {
+                    imgElement.classList.remove('hidden');
+                    loaderElement.classList.add('hidden');
+                };
+
+                imgElement.onerror = () => {
+                    imgElement.src = `https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80&sig=${angkaAcakBypassCache}`;
+                    imgElement.classList.remove('hidden');
+                    loaderElement.classList.add('hidden');
+                };
+                // =========================================================================
 
                 // 2. ISI DATA SIDEBAR (LATEST)
                 const latestContainer = document.getElementById('latest-container');
@@ -162,7 +193,6 @@
                     `;
                 });
 
-                // Selesai loading, tampilkan halaman portal berita
                 loadingState.classList.add('hidden');
                 portalContent.classList.remove('hidden');
 
