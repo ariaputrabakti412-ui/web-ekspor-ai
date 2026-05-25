@@ -9,7 +9,6 @@ export default async function handler(req, res) {
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
     const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-    // Prompt cerdas yang memaksa AI merancang topik acak dan output berformat JSON murni
     const promptStrukturKoran = `
     Bertindaklah sebagai Pemimpin Redaksi koran internasional modern. Tugasmu adalah membuat data berita ekspor/perdagangan global secara acak, bervariasi, dan dinamis agar pembaca tidak bosan. Pilih sektor komoditas yang luas secara bebas (selain kopi/sawit, bisa nikel, tekstil, manufaktur, aviasi, otomotif, bursa komoditas, dll).
 
@@ -27,7 +26,7 @@ export default async function handler(req, res) {
         "latest": [
             { "judul": "Judul berita kilat acak 1", "tanggal": "Mei 25, 2026", "penulis": "Nama Editor" },
             { "judul": "Judul berita kilat acak 2", "tanggal": "Mei 25, 2026", "penulis": "Nama Editor" },
-            { "judul": "Judul berita kilat acak 3", "tanggal": "Mei 25, 2026", "penulis": "Nama Editor" }
+            { "judul": "Judul berita kilat acak 3", "mei 25, 2026", "penulis": "Nama Editor" }
         ],
         "kategori_business": [
             { "judul": "Judul berita bisnis acak", "isi": "Penjelasan singkat 2 kalimat perkembangan bisnis manufaktur/ekspor terbaru.", "tanggal": "Mei 25, 2026" }
@@ -48,8 +47,9 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 contents: [{ parts: [{ text: promptStrukturKoran }] }],
                 generationConfig: { 
-                    temperature: 1.0, // Kreativitas maksimal agar topiknya terus berubah drastis
-                    responseMimeType: "application/json" // Mengunci respon agar dipastikan JSON murni
+                    temperature: 1.0, 
+                    // PERBAIKAN: Menggunakan format penulisan properti v1 API yang benar (snake_case)
+                    response_mime_type: "application/json" 
                 }
             })
         });
