@@ -6,14 +6,12 @@ export default async function handler(req, res) {
 
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    // Membaca API Key Groq yang kamu pasang di environment variable Vercel
     const GROQ_API_KEY = process.env.GEMINI_API_KEY; 
     const url = "https://api.groq.com/openai/v1/chat/completions";
 
     const promptStrukturKoran = `
     Bertindaklah sebagai Pemimpin Redaksi koran internasional modern. Buat data berita ekspor/perdagangan global secara acak, bervariasi, dan dinamis mengenai komoditas (seperti nikel, tekstil, otomotif, aviasi, dll).
-    
-    Wajib kembalikan respon dalam bentuk JSON murni tanpa gaya markdown (TANPA tanda backtick \`\`\`json).
+    Wajib kembalikan respon dalam bentuk JSON murni tanpa gaya markdown (TANPA tanda backtick).
 
     Struktur JSON wajib persis seperti ini:
     {
@@ -50,7 +48,7 @@ export default async function handler(req, res) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                // PERBAIKAN: Menggunakan model Llama terbaru yang aktif dan didukung penuh oleh Groq saat ini
+                // INI YANG HARUS DIPASTIKAN BERUBAH: Model baru yang aktif 100%
                 model: "llama-3.3-70b-versatile", 
                 messages: [{ role: "user", content: promptStrukturKoran }],
                 response_format: { type: "json_object" }, 
