@@ -6,7 +6,7 @@ export default async function handler(req, res) {
 
     if (req.method === 'OPTIONS') return res.status(200).end();
 
-    // Kita tetap panggil nama variable lama di Vercel agar kamu tidak perlu repot setting ulang env
+    // Membaca API Key Groq yang kamu pasang di environment variable Vercel
     const GROQ_API_KEY = process.env.GEMINI_API_KEY; 
     const url = "https://api.groq.com/openai/v1/chat/completions";
 
@@ -50,9 +50,10 @@ export default async function handler(req, res) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: "llama3-8b-8192", // Model gratis, super cepat, dan stabil milik Groq
+                // PERBAIKAN: Menggunakan model Llama terbaru yang aktif dan didukung penuh oleh Groq saat ini
+                model: "llama-3.3-70b-versatile", 
                 messages: [{ role: "user", content: promptStrukturKoran }],
-                response_format: { type: "json_object" }, // Mengunci output wajib JSON murni
+                response_format: { type: "json_object" }, 
                 temperature: 1.0
             })
         });
